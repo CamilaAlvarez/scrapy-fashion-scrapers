@@ -16,24 +16,18 @@ class OQVestirSpider(scrapy.Spider):
             main_category_name = main_category.css('li a::text').extract_first()
             subcategories = main_category.css('li div.sub-menu div.row div.col-sm-2 ul.list-unstyled li')
             for subcategory in subcategories:
-                if subcategory.xpath("@class") == 'menu-subtitle':
+                if subcategory.xpath("@class").extract_first() == 'menu-subtitle':
                     continue
                 subcategory_name = subcategory.css('a::text').extract_first()
                 subcategory_url = subcategory.css('a::attr(href)').extract_first()
                 yield response.follow(subcategory_url, callback=self.parse_category_page,
-                                      meta={'categories': [main_category_name, subcategory_name],
-                                            'splash': {
-                                                'args': {
-                                                    # set rendering arguments here
-                                                    'html': 1
-                                                },
-                                                'endpoint': 'render.html'}})
+                                      meta={'categories': [main_category_name, subcategory_name]})
 
     def parse_category_page(self, response):
         categories = response.meta['categories']
         for subcategory in response.css('ul.even li a'):
-            subcategory_name = subcategory.xpath('@title')
-            subcategory_url = subcategory.xpath('@href')
+            subcategory_name = subcategory.xpath('@title').extract_first()
+            subcategory_url = subcategory.xpath('@href').extract_first()
             yield response.follow(subcategory_url, callback=self.parse_subcategory_page,
                                   meta={'categories': categories.append(subcategory_name),
                                         'page_number': 0,
@@ -42,7 +36,9 @@ class OQVestirSpider(scrapy.Spider):
                                                 # set rendering arguments here
                                                 'html': 1
                                             },
-                                            'endpoint': 'render.html'}})
+                                            'endpoint': 'render.html'
+                                        }
+                                        })
 
     def parse_subcategory_page(self, response):
         page_url = response.url
@@ -83,7 +79,7 @@ class OQVestirSpider(scrapy.Spider):
 
     def parse_product(self, response):
         loader = ProductLoader(item=FashionScrapperItem(), response=response)
-        loader.add_css('code', 'p#codRef div::text')
+        loader.add_css('code', 'div.productReference::text')
         loader.add_css('name', 'hgroup.product-title h1 div::text')
         loader.add_css('details', 'hgroup.product-title h2 div::text')
         for description in response.css('div.productDescription ul li::text').extract():
