@@ -46,7 +46,11 @@ class OQVestirSpider(scrapy.Spider):
         categories = response.meta['categories']
         if page_number == 0:
             total_page_number_selector = response.css('span.pagTotal::text').extract_first()
-            total_page_number = int(total_page_number_selector)
+            if total_page_number_selector is None:
+                print('total_page_number_selector is None')
+                total_page_number = 1
+            else:
+                total_page_number = int(total_page_number_selector)
 
         else:
             total_page_number = response.meta['total_pages']
