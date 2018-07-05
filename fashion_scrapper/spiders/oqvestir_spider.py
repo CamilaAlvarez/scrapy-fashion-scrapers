@@ -90,6 +90,8 @@ class OQVestirSpider(scrapy.Spider):
             loader.add_value('description', description)
         for image in response.css('div.thumbnail ul.imagePlace ul li button img::attr(src)').extract():
             loader.add_value('image_urls', image)
+        for category in response.meta['categories']:
+            loader.add_value('categories', category)
         return loader.load_item()
 
 
