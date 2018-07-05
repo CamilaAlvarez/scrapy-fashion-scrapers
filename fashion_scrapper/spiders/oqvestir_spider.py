@@ -28,8 +28,9 @@ class OQVestirSpider(scrapy.Spider):
         for subcategory in response.css('ul.even li a'):
             subcategory_name = subcategory.xpath('@title').extract_first()
             subcategory_url = subcategory.xpath('@href').extract_first()
+            categories.append(subcategory_name)
             yield response.follow(subcategory_url, callback=self.parse_subcategory_page,
-                                  meta={'categories': categories.append(subcategory_name),
+                                  meta={'categories': categories,
                                         'page_number': 0,
                                         'splash': {
                                             'args': {
