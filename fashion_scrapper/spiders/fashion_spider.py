@@ -28,7 +28,7 @@ class FashionSpider(scrapy.Spider):
     def parse_product_page(self, response):
         loader = ProductLoader(item=FashionScrapperItem(), response=response)
         loader.add_css('code', 'span[itemprop="productID"]::attr(content)')
-        loader.add_css('name', 'h2.item-title::text')
+        loader.add_css('name', 'h2.item-title[itemprop="name"]::text')
         loader.add_css('description','div.brand-title::text')
         for detail in response.css('div.item-detail-expander div div ul li::text').extract():
             loader.add_value('details', detail)
