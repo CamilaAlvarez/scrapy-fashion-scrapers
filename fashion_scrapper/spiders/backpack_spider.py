@@ -14,9 +14,25 @@ class BackpackSpider(scrapy.Spider):
             number_items -= 1
         for backpack_url in response.css('div.listPageImage a::attr(href)'):
             number_items += 1
-            yield response.follow(backpack_url, callback=self.parse_backpack_page)
+            yield response.follow(backpack_url, callback=self.parse_backpack_page, meta={
+                                        'splash': {
+                                            'args': {
+                                                # set rendering arguments here
+                                                'html': 1
+                                            },
+                                            'endpoint': 'render.html'
+                                        }
+                                        })
         if number_items <= 2499:
-            yield response.follow(response.url.split('#')[0]+'#from'+str(number_items+1), callback=self.parse)
+            yield response.follow(response.url.split('#')[0]+'#from'+str(number_items+1), callback=self.parse, meta={
+                                        'splash': {
+                                            'args': {
+                                                # set rendering arguments here
+                                                'html': 1
+                                            },
+                                            'endpoint': 'render.html'
+                                        }
+                                        })
 
     def parse_backpack_page(self, response):
         loader = ProductLoader(item=FashionScrapperItem(), response=response)
