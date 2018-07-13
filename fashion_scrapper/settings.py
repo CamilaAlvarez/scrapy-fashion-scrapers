@@ -79,7 +79,7 @@ ITEM_PIPELINES = {
     'scrapy.pipelines.images.ImagesPipeline': 1,
     'fashion_scrapper.pipelines.FashionScrapperPipeline': 300,
 }
-IMAGES_STORE = '/home/calvarez/FASHION/THREDUP_V2/IMAGES'
+IMAGES_STORE = '/home/calvarez/FASHION/TRADESY/IMAGES'
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
