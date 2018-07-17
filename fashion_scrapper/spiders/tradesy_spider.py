@@ -70,6 +70,8 @@ class TradesySpider(scrapy.Spider):
             image_parts = image.split('?')
             image = image_parts[0]
             loader.add_value('image_urls', image)
+        for category in response.meta['categories']:
+            loader.add_value('categories', category)
         return loader.load_item()
 
 
