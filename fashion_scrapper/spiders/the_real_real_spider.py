@@ -4,20 +4,28 @@ from fashion_scrapper.items import FashionScrapperItem
 
 
 class TradesySpider(scrapy.Spider):
-    name = 'tradesy_spider'
-    base_url = 'https://www.tradesy.com/'
+    name = 'the_real_real_spider'
+    base_url = 'https://www.therealreal.com/'
     start_urls = [base_url]
 
     def parse(self, response):
-        for idx, category_section in enumerate(response.css('ul.trd-menu > li')):
+        for idx, category_section in enumerate(response.css('div.head-nav-menu.nav-menu.js-header-nav-menu')):
             if idx < 2:
                 continue
-            main_category_name = category_section.css('a.toplevel::text').extract_first()
-            category_column = category_section.css('div.trd-dropdown > ul')
-            if len(category_column) == 0:
-               print('Got to an unaccessible category: {}'.format(category_section.css('a::text').extract_first()))
-               continue
-            for category in category_column[0].css('li > a'):
+            category_column = category_section.css('div.head-nav-menu__column '
+                                                   '> div.head-nav-menu__inner-col.head-nav-menu__inner-col--grid')
+            main_category_name = category_section.xpath('@data-menu')
+            for category in category_column:
+                sub_category = category_section.css('div.head-nav-menu__item head-nav-menu__item--title::text')\
+                    .extract_first()
+                for sub_sub_category in category_column.css('a'):
+                    sub_sub_category_url = sub_sub_category.xpath('@href')
+                    sub_sub_category_name = sub_sub_category('text()')
+                    sub_sub_category_class = sub_sub_category.xpath('@class')
+                    if len(sub_sub_category_name) <= 0:
+                        continue
+                    if sub_sub_category_class == 'head-nav-menu__item head-nav-menu__item--title':
+                        sub_category = sub_sub_category_name
                 category_class = category.xpath('@class').extract_first()
                 if category_class == 'view' or category_class == 'primary':
                     continue
@@ -31,7 +39,7 @@ class TradesySpider(scrapy.Spider):
                                      'ul.indent > li > a')
         if len(subcategories) > 0:
             for subcategory in subcategories:
-                subcategory_url = subcategory.xpath('@href').extract_first()
+                subcategory_url = subcategory.xpath('@href')
                 subcategory_name = subcategory.xpath('@data-value').extract_first()
                 yield response.follow('{}{}'.format(self.base_url, subcategory_url),
                                       callback=self.parse_category_page,
