@@ -40,19 +40,15 @@ class TradesySpider(scrapy.Spider):
             current_page_str = response.css('li.page-link span.active::text').extract_first()
             current_page = int(current_page_str)
             total_page_number_selector = response.css('li.page-link > a')
-            total_page_number_str = response.css('li.page-link > a::attr(href)')
-            if len(total_page_number_str.extract_first().split('?page=')) == 1:
-                total_page_number_str = 1
-            elif len(total_page_number_selector[-1].css('span')) == 0:
-                total_page_number_str = total_page_number_selector[-1].xpath('//text()').extract_first()
-            else:
-                total_page_number_str = total_page_number_str.extract()[-1].split('?page=')[1]
+            total_page_number_str_list = total_page_number_selector.xpath('text()').extract()
+            total_page_number_str_list = list(filter(lambda x: len(x.strip()) > 0, total_page_number_str_list))
+            total_page_number_str = total_page_number_str_list[-1]
             total_page_number = int(total_page_number_str)
             products = response.css('a.item-image::attr(href)').extract()
             for product in products:
                 product_url = '{}{}'.format(self.base_url, product)
                 yield response.follow(product_url, callback=self.parse_product,
-                                      meta=response.meta)
+                                     meta=response.meta)
             if current_page < total_page_number:
                 next_page_url = response.url.split('?')[0]
                 next_page_url = next_page_url + '?page=' + str(current_page + 1)
