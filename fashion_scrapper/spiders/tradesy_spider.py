@@ -23,16 +23,17 @@ class TradesySpider(scrapy.Spider):
                 if category_class == 'view' or category_class == 'primary':
                     continue
                 category_url = category.xpath('@href').extract_first()
-                category_name = category.xpath('//text()').extract_first()
+                category_name = category.xpath('text()').extract_first().strip()
                 yield response.follow(category_url, callback=self.parse_category_page,
                                       meta={'categories': [main_category_name, category_name]})
 
     def parse_category_page(self, response):
-        subcategories = response.css('div.department-filters ul.filters-nested li ul.indent li ul.indent li a')
+        subcategories = response.css('div[id="department-filters"] > ul[id="filters-nested"] > li > ul.indent > li > '
+                                     'ul.indent > li > a')
         if len(subcategories) > 0:
             for subcategory in subcategories:
                 subcategory_url = subcategory.xpath('@href')
-                subcategory_name = subcategory.xpath('@data-value')
+                subcategory_name = subcategory.xpath('@data-value').extract_first()
                 yield response.follow('{}{}'.format(self.base_url, subcategory_url),
                                       callback=self.parse_category_page,
                                       meta={'categories':  response.meta['categories'] + [subcategory_name]})
@@ -40,13 +41,13 @@ class TradesySpider(scrapy.Spider):
             current_page_str = response.css('li.page-link span.active::text').extract_first()
             current_page = int(current_page_str)
             total_page_number_selector = response.css('li.page-link > a')
-            total_page_number_str = response.css('li.page-link > a::attr(href)').extract_first().split('?page=')
-            if len(total_page_number_str) == 1:
+            total_page_number_str = response.css('li.page-link > a::attr(href)')
+            if len(total_page_number_str.extract_first().split('?page=')) == 1:
                 total_page_number_str = 1
             elif len(total_page_number_selector[-1].css('span')) == 0:
                 total_page_number_str = total_page_number_selector[-1].xpath('//text()').extract_first()
             else:
-                total_page_number_str = total_page_number_str[1]
+                total_page_number_str = total_page_number_str.extract()[-1].split('?page=')[1]
             total_page_number = int(total_page_number_str)
             products = response.css('a.item-image::attr(href)').extract()
             for product in products:
@@ -61,7 +62,8 @@ class TradesySpider(scrapy.Spider):
 
     def parse_product(self, response):
         loader = ProductLoader(item=FashionScrapperItem(), response=response)
-        loader.add_css('code', 'span.item-id::text')
+        code = response.css('span.item-id::text').extract_first().replace('Item #:','').strip()
+        loader.add_value('code', code)
         loader.add_css('name', 'span[id="idp-title"]::text')
         loader.add_css('description', 'p[itemprop="description"]::text')
         loader.add_css('details', 'div.idp-details.idp-info-accordion > div::text')
