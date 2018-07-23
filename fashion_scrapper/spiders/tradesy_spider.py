@@ -25,6 +25,8 @@ class TradesySpider(scrapy.Spider):
                     continue
                 category_url = category.xpath('@href').extract_first()
                 category_name = category.xpath('text()').extract_first().strip()
+                if category_name == 'Weddings':
+                    continue
                 yield response.follow(category_url, callback=self.parse_category_page,
                                       meta={'categories': [main_category_name, category_name]})
 
