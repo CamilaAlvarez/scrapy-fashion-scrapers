@@ -33,7 +33,9 @@ class TradesySpider(scrapy.Spider):
     def parse_category_page(self, response):
         subcategories = response.css('div[id="department-filters"] > ul[id="filters-nested"] > li > ul.indent > li > '
                                      'ul.indent > li > a')
-        if len(subcategories) > 0:
+        checked_subcategories = response.css('div[id="department-filters"] > ul[id="filters-nested"] > li > ul.indent '
+                                             '> li > ul.indent > li > a.checked')
+        if len(subcategories) > 0 >= len(checked_subcategories):
             for subcategory in subcategories:
                 subcategory_url = subcategory.xpath('@href').extract_first()
                 subcategory_name = subcategory.xpath('@data-value').extract_first()
