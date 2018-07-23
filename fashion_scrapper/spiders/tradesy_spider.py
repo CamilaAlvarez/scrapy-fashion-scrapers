@@ -13,6 +13,8 @@ class TradesySpider(scrapy.Spider):
             if idx < 2:
                 continue
             main_category_name = category_section.css('a.toplevel::text').extract_first()
+            if main_category_name != 'Clothing':
+                continue
             category_column = category_section.css('div.trd-dropdown > ul')
             if len(category_column) == 0:
                print('Got to an unaccessible category: {}'.format(category_section.css('a::text').extract_first()))
@@ -23,6 +25,7 @@ class TradesySpider(scrapy.Spider):
                     continue
                 category_url = category.xpath('@href').extract_first()
                 category_name = category.xpath('text()').extract_first().strip()
+                print(category_name)
                 yield response.follow(category_url, callback=self.parse_category_page,
                                       meta={'categories': [main_category_name, category_name]})
 
