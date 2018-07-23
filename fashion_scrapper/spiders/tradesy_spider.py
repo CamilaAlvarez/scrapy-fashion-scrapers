@@ -25,7 +25,6 @@ class TradesySpider(scrapy.Spider):
                     continue
                 category_url = category.xpath('@href').extract_first()
                 category_name = category.xpath('text()').extract_first().strip()
-                print(category_name)
                 yield response.follow(category_url, callback=self.parse_category_page,
                                       meta={'categories': [main_category_name, category_name]})
 
@@ -36,7 +35,7 @@ class TradesySpider(scrapy.Spider):
             for subcategory in subcategories:
                 subcategory_url = subcategory.xpath('@href').extract_first()
                 subcategory_name = subcategory.xpath('@data-value').extract_first()
-                yield response.follow('{}{}'.format(self.base_url, subcategory_url),
+                yield response.follow(subcategory_url,
                                       callback=self.parse_category_page,
                                       meta={'categories':  response.meta['categories'] + [subcategory_name]})
         else:
