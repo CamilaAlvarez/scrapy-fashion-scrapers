@@ -76,7 +76,10 @@ def separate_in_definied_classes(tradesy_class_folder, klass_needed, output_fold
         elif klass_needed == 'romper':
             belongs_to_class = is_romper(product)
         if belongs_to_class:
-            shutil.copyfile(product_json_path, output_folder)
+            final_path = os.path.join(output_folder, os.path.basename(product_json_path))
+            if not os.path.exists(output_folder):
+                os.makedirs(output_folder)
+            shutil.copyfile(product_json_path, final_path)
 
 
 
