@@ -1,10 +1,14 @@
 
 
 def _get_product_description(product_json):
+    if 'description' not in product_json:
+        return ''
     return product_json['description'].lower().strip()
 
 
 def _get_product_name(product_json):
+    if 'name' not in product_json:
+        return ''
     return product_json['name'].lower().strip()
 
 
