@@ -25,7 +25,7 @@ class TradesySpider(scrapy.Spider):
                     continue
                 category_url = category.xpath('@href').extract_first()
                 category_name = category.xpath('text()').extract_first().strip()
-                if category_name == 'Weddings':
+                if category_name != 'Bottoms' or category_name != 'Outerwear' or category_name != 'Activewear':
                     continue
                 yield response.follow(category_url, callback=self.parse_category_page,
                                       meta={'categories': [main_category_name, category_name]})
@@ -35,7 +35,9 @@ class TradesySpider(scrapy.Spider):
                                      'ul.indent > li > a')
         checked_subcategories = response.css('div[id="department-filters"] > ul[id="filters-nested"] > li > ul.indent '
                                              '> li > ul.indent > li > a.checked')
-        if len(subcategories) > 0 >= len(checked_subcategories):
+        checked_subcategories_radio = response.css('div[id="department-filters"] > ul[id="filters-nested"] > li '
+                                                   '> ul.indent > li > ul.indent > li > a.selected')
+        if len(subcategories) > 0 and (0 >= len(checked_subcategories) or 0 >= checked_subcategories_radio):
             for subcategory in subcategories:
                 subcategory_url = subcategory.xpath('@href').extract_first()
                 subcategory_name = subcategory.xpath('@data-value').extract_first()
