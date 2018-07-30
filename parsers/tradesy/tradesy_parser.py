@@ -1,4 +1,3 @@
-from parsers.apparel_classes import classes_v1
 from parsers.tradesy import *
 import os
 import json
