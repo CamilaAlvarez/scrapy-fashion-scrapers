@@ -32,7 +32,7 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/2010010
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 AUTOTHROTTLE_ENABLED = True
-#HTTPCACHE_ENABLED = True
+HTTPCACHE_ENABLED = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
