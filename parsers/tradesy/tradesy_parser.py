@@ -80,7 +80,28 @@ def separate_in_definied_classes(tradesy_class_folder, klass_needed, output_fold
                 os.makedirs(output_folder)
             shutil.copyfile(product_json_path, final_path)
 
-
+@parse.command()
+@click.argument('base_json_folder')
+@click.argument('base_image_folder')
+@click.argument('base_output_folder')
+def organize_images(base_json_folder, base_image_folder, base_output_folder):
+    dirs = os.listdir(base_json_folder)
+    for dir in dirs:
+        final_image_dir = os.path.join(base_output_folder, dir)
+        if not os.path.exists(final_image_dir):
+            os.makedirs(final_image_dir)
+        files = os.listdir(dir)
+        for file in files:
+            product_json_path = os.path.join(base_json_folder, dir, file)
+            product_json_file = open(product_json_path)
+            product_json = json.load(product_json_file)
+            product_images = product_json['images']
+            product_code = product_json['code']
+            for idx, image in enumerate(product_images):
+                image_relative_path = image['path']
+                image_full_path = os.path.join(base_image_folder, image_relative_path)
+                image_final_path = os.path.join(final_image_dir, '{}_{}.jpg'.format(product_code, idx + 1))
+                shutil.copyfile(image_full_path, image_final_path)
 
 if __name__ == '__main__':
     parse()
