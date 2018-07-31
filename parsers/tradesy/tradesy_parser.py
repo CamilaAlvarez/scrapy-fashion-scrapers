@@ -99,7 +99,7 @@ def organize_images(base_json_folder, output_image_url_file, output_image_map_fi
             for image in product_images:
                 image_url = image['url']
                 output_image_urls.write('{}\n'.format(image_url))
-                output_image_map.write('{}\t{}\t{}\t{}\n'.format(dir, product_code, image_url))
+                output_image_map.write('{}\t{}\t{}\n'.format(dir, product_code, image_url))
 
 
 if __name__ == '__main__':
