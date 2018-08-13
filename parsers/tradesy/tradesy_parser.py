@@ -110,6 +110,8 @@ def copy_organized_images(base_json_folder, output_base_folder, base_image_folde
     dirs = os.listdir(base_json_folder)
     for dir in dirs:
         files = os.listdir(os.path.join(base_json_folder, dir))
+        if not os.path.exists(os.path.join(output_base_folder, dir)):
+            os.makedirs(os.path.join(output_base_folder, dir))
         for file in files:
             product_json_path = os.path.join(base_json_folder, dir, file)
             product_json_file = open(product_json_path)
