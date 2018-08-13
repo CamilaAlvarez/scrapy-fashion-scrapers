@@ -56,6 +56,10 @@ def is_romper(product_json):
     return _is_of_class_generic_by_description(product_json, 'romper')
 
 
+def is_sweatpants(product_json):
+    return _is_of_class_generic(product_json, 'activewear pants')
+
+
 def is_sun_hat(product_json):
     prod_name = _get_product_name(product_json)
     return 'fedora' in prod_name or 'brimmed' in prod_name or 'boater' in prod_name or 'panama' in prod_name or\

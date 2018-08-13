@@ -74,6 +74,8 @@ def separate_in_definied_classes(tradesy_class_folder, klass_needed, output_fold
             belongs_to_class = is_jumpsuit(product)
         elif klass_needed == 'romper':
             belongs_to_class = is_romper(product)
+        elif klass_needed == 'sweatpants':
+            belongs_to_class = is_sweatpants(product)
         if belongs_to_class:
             final_path = os.path.join(output_folder, os.path.basename(product_json_path))
             if not os.path.exists(output_folder):
