@@ -102,5 +102,33 @@ def organize_images(base_json_folder, output_image_url_file, output_image_map_fi
                 output_image_map.write('{}\t{}\t{}\n'.format(dir, product_code, image_url))
 
 
+@parse.command()
+@click.argument('base_json_folder')
+@click.argument('output_base_folder')
+@click.argument('base_image_folder')
+def copy_organized_images(base_json_folder, output_base_folder, base_image_folder):
+    dirs = os.listdir(base_json_folder)
+    for dir in dirs:
+        files = os.listdir(os.path.join(base_json_folder, dir))
+        for file in files:
+            product_json_path = os.path.join(base_json_folder, dir, file)
+            product_json_file = open(product_json_path)
+            product_json = json.load(product_json_file)
+            product_images = product_json['images']
+            product_code = product_json['code']
+            for idx, image in enumerate(product_images):
+                image_relative = image['path']
+                image_full_path = os.path.join(base_image_folder, image_relative)
+                try:
+                    shutil.copy(image_full_path, os.path.join(output_base_folder, dir,
+                                                              '{}_{}.jpg'.format(product_code, idx)))
+                # eg. src and dest are the same file
+                except shutil.Error as e:
+                    print('Error: %s' % e)
+                # eg. source or destination doesn't exist
+                except IOError as e:
+                    print('Error: %s' % e.strerror)
+
+
 if __name__ == '__main__':
     parse()
