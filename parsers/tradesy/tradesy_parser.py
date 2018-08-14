@@ -3,6 +3,7 @@ import os
 import json
 import shutil
 import click
+from ..apparel_classes import classes_v1
 
 
 @click.group()
@@ -132,6 +133,20 @@ def copy_organized_images(base_json_folder, output_base_folder, base_image_folde
                 # eg. source or destination doesn't exist
                 except IOError as e:
                     print('Error: %s' % e.strerror)
+
+@parse.command()
+@click.argument('base_image_folder')
+@click.argument('output_tsv_file')
+def build_tsv(base_image_folder, output_tsv_file):
+    cat_dirs = os.listdir(base_image_folder)
+    output_tsv = open(output_tsv_file, 'w')
+    number_cats = len(cat_dirs)
+    for dir in cat_dirs:
+        files = os.listdir(os.path.join(base_image_folder, dir))
+        for file in files:
+            image_full_path = os.path.join(base_image_folder, dir, file)
+            cat_id = classes_v1.index(dir)
+            output_tsv.write('{}\t{}\t{}\n'.format(image_full_path, cat_id, number_cats))
 
 
 if __name__ == '__main__':
